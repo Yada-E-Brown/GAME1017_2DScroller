@@ -594,8 +594,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -6679804550961391847, guid: 390a718593f9a99448b45ea72dac3427, type: 3}
-        m_TargetAssemblyTypeName: AudioPlayer, Assembly-CSharp
+      - m_Target: {fileID: 9138315535258301702, guid: 390a718593f9a99448b45ea72dac3427, type: 3}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
         m_MethodName: SetMusicVolume
         m_Mode: 0
         m_Arguments:
@@ -921,8 +921,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -6679804550961391847, guid: 390a718593f9a99448b45ea72dac3427, type: 3}
-        m_TargetAssemblyTypeName: AudioPlayer, Assembly-CSharp
+      - m_Target: {fileID: 9138315535258301702, guid: 390a718593f9a99448b45ea72dac3427, type: 3}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
         m_MethodName: SetSfxVolume
         m_Mode: 0
         m_Arguments:
@@ -1382,7 +1382,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -6679804550961391847, guid: 390a718593f9a99448b45ea72dac3427, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
