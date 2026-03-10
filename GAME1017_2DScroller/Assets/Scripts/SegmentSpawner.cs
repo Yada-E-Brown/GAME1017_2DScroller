@@ -1,26 +1,42 @@
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
 
 public class SegmentSpawner : MonoBehaviour
 {
     public GameObject rooftopPrefab;
     public int numPlatformsPerChunk = 5;
 
-    public float platformSpacing = 12f;
-    public float spacingVariation = 4f;
+    public float platformSpacing = 30f;
+    public float spacingVariation = 5f;
 
-    public float heightVar = 6f;
+    public float maxHeightVar = -3.0f;
+    public float minHeightVar = -6.0f;
 
-    public float baseWidth = 10f;
-    public float widthVariation = 0.2f;
+    public float widthVariation = 2f;
+    float minWidth = 5; 
+    float maxWidth = 15f;
+
+    public GameObject playerCharacter;
 
     public List<GameObject> spawnedPlatforms = new List<GameObject>();
+    
 
     void Start()
     {
-        BuildSegmentsAt(Vector3.zero);
+        BuildSegmentsAt(new Vector3(10,0,0));
+    }
+    private void Update()
+    {
+        if (playerCharacter.transform.position.x > spawnedPlatforms[spawnedPlatforms.Count - 1].transform.position.x)
+        {
+            BuildSegmentsAt(new Vector3((15 + spawnedPlatforms[spawnedPlatforms.Count - 1].transform.position.x), 0, 0));
+        }
+
+        if (spawnedPlatforms.Count > numPlatformsPerChunk * 2)
+        {
+            Destroy(spawnedPlatforms[0]);
+            spawnedPlatforms.RemoveAt(0);
+        }
     }
 
     void BuildSegmentsAt(Vector3 posOffset)
@@ -29,21 +45,33 @@ public class SegmentSpawner : MonoBehaviour
 
         for (int i = 0; i < numPlatformsPerChunk; i++)
         {
-            float randomHeight = Random.Range(-heightVar, heightVar);
-            float randomWidth = Random.Range( 1 - widthVariation, 1 + widthVariation);
-            float randomSpacing = Random.Range(platformSpacing - spacingVariation, platformSpacing + spacingVariation);
+            float randomHeight = Random.Range(minHeightVar, maxHeightVar);
+
+            // safer width range
+            float randomWidth = Random.Range(minWidth, maxWidth);
+
+            float randomSpacing = Random.Range(
+                platformSpacing - spacingVariation,
+                platformSpacing + spacingVariation
+            );
 
             GameObject platform = Instantiate(
                 rooftopPrefab,
-                new Vector3(currentX, posOffset.y + randomHeight, 0),
+                new Vector3(currentX, randomHeight, 0),
                 Quaternion.identity
             );
 
             Vector3 scale = platform.transform.localScale;
-            platform.transform.localScale = new Vector3(randomWidth, scale.y, scale.z);
+
+            platform.transform.localScale = new Vector3(
+                randomWidth,
+                scale.y,
+                scale.z
+            );
 
             spawnedPlatforms.Add(platform);
 
+            // Move X forward for the next platform
             currentX += randomSpacing;
         }
     }
