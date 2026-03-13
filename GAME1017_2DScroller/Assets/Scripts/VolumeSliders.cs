@@ -1,18 +1,21 @@
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
-
 
 public class VolumeSlider : MonoBehaviour
 {
-    public void SetMusicVolume(float volume)
-    {
-        SoundManager.GetInstance().SetMusicVolume(volume);
-    }
+    public Slider musicSlider;
+    public Slider sfxSlider;
 
-    public void SetSfxVolume(float volume)
+    private void Start()
     {
-        SoundManager.GetInstance().SetSfxVolume(volume);
-    }
+        musicSlider.onValueChanged.AddListener((value) =>
+        {
+            GameManager.Instance.soundManager.SetMusicVolume(value);
+        });
 
-}   
+        sfxSlider.onValueChanged.AddListener((value) =>
+        {
+            GameManager.Instance.soundManager.SetSfxVolume(value);
+        });
+    }
+}

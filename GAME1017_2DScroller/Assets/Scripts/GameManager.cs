@@ -1,73 +1,69 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    public enum States
+    public enum States { Menu, Play, GameOver }
+
+    public static GameManager Instance;
+
+    public States CurrentState  = States.Menu;
+
+    public SoundManager soundManager;
+
+    public ScoreController scoreManager;
+
+    private void Awake()
     {
-        Menu,
-        Play,
-        GameOver
-    }
-    private States state = States.Menu;
-    private GameManager() { }
-    private static GameManager gameMangagerInstance;
-    public static GameManager GetInstance()
-    {
-        if (gameMangagerInstance == null)
+        if (Instance == null)
         {
-            gameMangagerInstance = FindAnyObjectByType<GameManager>();
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            GameObject obj = new GameObject("SoundManager");
+            soundManager = obj.AddComponent<SoundManager>();
+            DontDestroyOnLoad(obj);
         }
-        return gameMangagerInstance;
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    //Menus
-    [SerializeField]
-    public GameObject startMenu;
-
-    public GameObject gameOverMenu;
-
-    public GameObject playerCharacter;
-
-    public GameObject SpawnPoint;
-
-    private void Start()
+    public void StartGame() 
     {
-        CurrentState();
-        //if (this == gameMangagerInstance)
-        //{
-        //    Destroy(this);
-        //}
-        Time.timeScale = 0;
-        SpawnPoint = GameObject.Find("SpawnPoint");
+        CurrentState = States.Play;
+        SceneManager.LoadScene("GameScene");
     }
 
-    public void Playing()
-    {
-        state = States.Play;
-        startMenu.SetActive(false);
-        gameOverMenu.SetActive(false);
-        playerCharacter.transform.position = SpawnPoint.transform.position;
-        CurrentState();
-        Time.timeScale = 1;
-    }
     public void GameOver()
     {
-        state = States.GameOver;
-        gameOverMenu.SetActive(true);
-        Time.timeScale = 0;
-        CurrentState();
+        CurrentState = States.GameOver;
 
+        soundManager.PlaySfx(soundManager.deathSfx);
+
+        StartCoroutine(RestartGame());
     }
 
-    public void CurrentState()
+    IEnumerator RestartGame()
     {
-        Debug.Log("Current State is: ");
-        Debug.Log(state);
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene("GameScene");
+        CurrentState = States.Play;
     }
-    public States GetMode()
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        return state;
-
+        scoreManager = FindAnyObjectByType<ScoreController>();
+    }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 }

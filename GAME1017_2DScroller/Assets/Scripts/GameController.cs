@@ -2,28 +2,14 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    void RestartOption()
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.X))
         {
-            GameManager.GetInstance().Playing();
+            if (GameManager.Instance.CurrentState == GameManager.States.Menu)
+            {
+                GameManager.Instance.StartGame();
+            }
         }
-    }
-    void Update()
-    {
-        switch (GameManager.GetInstance().GetMode())
-        {
-            case GameManager.States.Play:
-                    GameManager.GetInstance().Playing();
-                break;
-            case GameManager.States.Menu:
-                RestartOption();
-                break;
-            case GameManager.States.GameOver:
-                RestartOption();
-                break;
-
-        }
-        
     }
 }

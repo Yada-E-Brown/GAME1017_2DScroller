@@ -6,35 +6,64 @@ public class SegmentSpawner : MonoBehaviour
     public GameObject rooftopPrefab;
     public int numPlatformsPerChunk = 5;
 
-    public float platformSpacing = 30f;
-    public float spacingVariation = 5f;
+    float minSpacing = 15f;
+    float maxSpacing = 20f;
 
     public float maxHeightVar = -3.0f;
     public float minHeightVar = -6.0f;
 
     public float widthVariation = 2f;
-    float minWidth = 5; 
+    float minWidth = 5;
     float maxWidth = 15f;
 
     public GameObject playerCharacter;
 
     public List<GameObject> spawnedPlatforms = new List<GameObject>();
-    
+
+    private bool hasInitialized = false;
 
     void Start()
     {
-        BuildSegmentsAt(new Vector3(10,0,0));
+        FindPlayer();
+        spawnedPlatforms.Clear();
+        BuildSegmentsAt(new Vector3(10, 0, 0));
+        hasInitialized = true;
+    }
+    private void FindPlayer()
+    {
+        playerCharacter = GameObject.FindGameObjectWithTag("Player");
     }
     private void Update()
     {
-        if (playerCharacter.transform.position.x > spawnedPlatforms[spawnedPlatforms.Count - 1].transform.position.x)
-        {
-            BuildSegmentsAt(new Vector3((15 + spawnedPlatforms[spawnedPlatforms.Count - 1].transform.position.x), 0, 0));
-        }
+        if (GameManager.Instance.CurrentState != GameManager.States.Play)
+            return;
 
-        if (spawnedPlatforms.Count > numPlatformsPerChunk * 2)
+        // Try to find player if we lost reference
+        if (playerCharacter == null)
         {
-            Destroy(spawnedPlatforms[0]);
+            FindPlayer();
+            return;
+        }
+        spawnedPlatforms.RemoveAll(platform => platform == null);
+        if (spawnedPlatforms.Count > 0 && hasInitialized)
+        {
+            // Check if player has passed the last platform
+            GameObject lastPlatform = spawnedPlatforms[spawnedPlatforms.Count - 1];
+            if (lastPlatform != null &&
+                playerCharacter.transform.position.x > lastPlatform.transform.position.x - 10f)
+            {
+                BuildSegmentsAt(new Vector3(
+                    lastPlatform.transform.position.x + Random.Range(minSpacing, maxSpacing),
+                    0,
+                    0));
+            }
+        }
+        while (spawnedPlatforms.Count > numPlatformsPerChunk * 2)
+        {
+            if (spawnedPlatforms[0] != null)
+            {
+                Destroy(spawnedPlatforms[0]);
+            }
             spawnedPlatforms.RemoveAt(0);
         }
     }
@@ -46,14 +75,8 @@ public class SegmentSpawner : MonoBehaviour
         for (int i = 0; i < numPlatformsPerChunk; i++)
         {
             float randomHeight = Random.Range(minHeightVar, maxHeightVar);
-
-            // safer width range
             float randomWidth = Random.Range(minWidth, maxWidth);
-
-            float randomSpacing = Random.Range(
-                platformSpacing - spacingVariation,
-                platformSpacing + spacingVariation
-            );
+            float randomSpacing = Random.Range(minSpacing, maxSpacing);
 
             GameObject platform = Instantiate(
                 rooftopPrefab,
@@ -62,17 +85,25 @@ public class SegmentSpawner : MonoBehaviour
             );
 
             Vector3 scale = platform.transform.localScale;
-
             platform.transform.localScale = new Vector3(
                 randomWidth,
                 scale.y,
                 scale.z
             );
-
             spawnedPlatforms.Add(platform);
-
-            // Move X forward for the next platform
             currentX += randomSpacing;
         }
+    }
+    public void ResetSpawner()
+    {
+        foreach (var platform in spawnedPlatforms)
+        {
+            if (platform != null)
+                Destroy(platform);
+        }
+        spawnedPlatforms.Clear();
+
+        FindPlayer();
+        BuildSegmentsAt(new Vector3(10, 0, 0));
     }
 }

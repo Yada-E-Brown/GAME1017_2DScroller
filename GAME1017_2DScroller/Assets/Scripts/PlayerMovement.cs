@@ -5,9 +5,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
 
     public float runningVelocity = 2f;
-    public float jumpForce = 10f;        // initial jump force
-    public float jumpHoldMultiplier = 2f; // extra lift when holding
-    public float maxJumpHoldTime = 0.2f;
+    public float jumpForce = 10f;        
+    public float jumpHoldMultiplier = 5f; 
+    public float maxJumpHoldTime = 0.5f;
 
     private bool isGrounded;
     private bool isJumping;
@@ -25,10 +25,10 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping = true;
             jumpTimeCounter = 0f;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // single impulse
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
-        // Hold jump for slightly higher jump
+        //  higher jump
         if (Input.GetKey(KeyCode.Space) && isJumping)
         {
             if (jumpTimeCounter < maxJumpHoldTime)
@@ -38,7 +38,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // Stop holding jump
         if (Input.GetKeyUp(KeyCode.Space))
         {
             isJumping = false;
@@ -46,20 +45,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (transform.position.y <= -5f)
         {
-            GameManager.GetInstance().GameOver();
+            GameManager.Instance.GameOver();
         }
     }
 
     void FixedUpdate()
     {
-        if (GameManager.GetInstance().GetMode() == GameManager.States.Play)
-        {
             rb.linearVelocity = new Vector2(runningVelocity, rb.linearVelocity.y);
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
-        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
