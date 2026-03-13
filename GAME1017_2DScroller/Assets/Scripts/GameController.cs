@@ -10,6 +10,10 @@ public class GameController : MonoBehaviour
             {
                 GameManager.Instance.StartGame();
             }
+            if(GameManager.Instance.CurrentState == GameManager.States.GameOver)
+            {
+                GameManager.Instance.StartGame();
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ public class SegmentSpawner : MonoBehaviour
         if (GameManager.Instance.CurrentState != GameManager.States.Play)
             return;
 
-        // Try to find player if we lost reference
+
         if (playerCharacter == null)
         {
             FindPlayer();
@@ -47,15 +47,12 @@ public class SegmentSpawner : MonoBehaviour
         spawnedPlatforms.RemoveAll(platform => platform == null);
         if (spawnedPlatforms.Count > 0 && hasInitialized)
         {
-            // Check if player has passed the last platform
             GameObject lastPlatform = spawnedPlatforms[spawnedPlatforms.Count - 1];
             if (lastPlatform != null &&
                 playerCharacter.transform.position.x > lastPlatform.transform.position.x - 10f)
             {
                 BuildSegmentsAt(new Vector3(
-                    lastPlatform.transform.position.x + Random.Range(minSpacing, maxSpacing),
-                    0,
-                    0));
+                    lastPlatform.transform.position.x + Random.Range(minSpacing, maxSpacing),0,0));
             }
         }
         while (spawnedPlatforms.Count > numPlatformsPerChunk * 2)
@@ -67,7 +64,6 @@ public class SegmentSpawner : MonoBehaviour
             spawnedPlatforms.RemoveAt(0);
         }
     }
-
     void BuildSegmentsAt(Vector3 posOffset)
     {
         float currentX = posOffset.x;
@@ -98,12 +94,10 @@ public class SegmentSpawner : MonoBehaviour
     {
         foreach (var platform in spawnedPlatforms)
         {
-            if (platform != null)
+            if (platform !=null)
                 Destroy(platform);
         }
         spawnedPlatforms.Clear();
-
         FindPlayer();
-        BuildSegmentsAt(new Vector3(10, 0, 0));
     }
 }

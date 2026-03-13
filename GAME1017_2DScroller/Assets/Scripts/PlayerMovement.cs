@@ -6,8 +6,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float runningVelocity = 2f;
     public float jumpForce = 10f;        
-    public float jumpHoldMultiplier = 5f; 
-    public float maxJumpHoldTime = 0.5f;
+    public float jumpHoldMultiplier = 10f; 
+    public float maxJumpHoldTime = 1f;
 
     private bool isGrounded;
     private bool isJumping;

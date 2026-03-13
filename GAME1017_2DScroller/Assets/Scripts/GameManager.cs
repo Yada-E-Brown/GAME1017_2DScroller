@@ -39,23 +39,29 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        CurrentState = States.GameOver;
 
+        CurrentState = States.GameOver;
+        SceneManager.LoadScene("GameOverScene");
         soundManager.PlaySfx(soundManager.deathSfx);
 
-        StartCoroutine(RestartGame());
-    }
-
-    IEnumerator RestartGame()
-    {
-        yield return new WaitForSeconds(1f);
-
-        SceneManager.LoadScene("GameScene");
-        CurrentState = States.Play;
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         scoreManager = FindAnyObjectByType<ScoreController>();
+
+        SegmentSpawner spawner = FindAnyObjectByType<SegmentSpawner>();
+        if (spawner != null)
+        {
+            spawner.ResetSpawner();
+        }
+
+        CameraController camera = FindAnyObjectByType<CameraController>();
+        if (camera != null && camera.player == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                camera.player = player.transform;
+        }
     }
     void OnEnable()
     {
