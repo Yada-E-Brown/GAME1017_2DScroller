@@ -13,6 +13,18 @@ public class GameManager : MonoBehaviour
     public SoundManager soundManager;
 
     public ScoreController scoreManager;
+    public GameObject playerCharacter;
+
+    private GameManager(){}
+    public static GameManager instance = null;
+    public static GameManager GameManagerInstance()
+    {
+        if(instance == null)
+        {
+            instance = FindAnyObjectByType<GameManager>();
+        }
+        return instance;
+    }
 
     private void Awake()
     {
@@ -35,6 +47,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = States.Play;
         SceneManager.LoadScene("GameScene");
+        Debug.Log("Saved Score: " + PlayerPrefs.GetInt("Score"));
     }
 
     public void GameOver()
@@ -43,6 +56,9 @@ public class GameManager : MonoBehaviour
         CurrentState = States.GameOver;
         SceneManager.LoadScene("GameOverScene");
         soundManager.PlaySfx(soundManager.deathSfx);
+        PlayerPrefs.SetInt("Score", (int)playerCharacter.transform.position.x);
+        PlayerPrefs.Save();
+        Debug.Log("Saved Score: " + PlayerPrefs.GetInt("Score"));
 
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)

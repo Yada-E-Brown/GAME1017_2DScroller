@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,10 +13,20 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private bool isJumping;
     private float jumpTimeCounter;
+    public TMP_Text PositionText;
+    public TMP_Text SpeedText;
+    private float uiUpdateTimer = 0f;
+    public float uiUpdateInterval = 1f;
+    private float speedMultiplier = 1f;
+    private float slowTimer = 0f;
+    public float slowDuration = 1f;
 
+
+  
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
     }
 
     void Update()
@@ -47,12 +58,31 @@ public class PlayerMovement : MonoBehaviour
         {
             GameManager.Instance.GameOver();
         }
+        if (slowTimer > 0)
+        {
+            slowTimer -= Time.deltaTime;
+
+            if (slowTimer <= 0)
+            {
+                speedMultiplier = 1f;
+            }
+        }
+        uiUpdateTimer += Time.deltaTime;
+
+        if (uiUpdateTimer >= uiUpdateInterval)
+        {
+            uiUpdateTimer = 0f;
+
+            PositionText.text = "Position: " + transform.position.x.ToString("F2");
+
+            float speed = rb.linearVelocity.magnitude;
+            SpeedText.text = "Speed: " + speed.ToString("F2");
+        }
     }
 
     void FixedUpdate()
     {
-            rb.linearVelocity = new Vector2(runningVelocity, rb.linearVelocity.y);
-
+        rb.linearVelocity = new Vector2(runningVelocity * speedMultiplier, rb.linearVelocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -70,5 +100,11 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrounded = false;
         }
+    }
+    public void Slow(float amount)
+    {
+        speedMultiplier = amount;
+        slowTimer = slowDuration;
+
     }
 }
