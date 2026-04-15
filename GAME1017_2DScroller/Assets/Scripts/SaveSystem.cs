@@ -19,8 +19,5 @@ public class SaveSystem : MonoBehaviour
     {
         
     }
-    internal static void SaveScores()
-    {
-        PlayerPrefs.SetInt("Score", (int)GameManager.Instance.playerCharacter);
-    }
+
 }

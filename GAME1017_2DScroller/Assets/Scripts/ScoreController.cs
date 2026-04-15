@@ -80,7 +80,7 @@ public class ScoreController : MonoBehaviour
         // Add new score
         scores.Add(newScore);
 
-        // Sort descending
+
         scores.Sort((a, b) => b.CompareTo(a));
 
         // Keep only top 5

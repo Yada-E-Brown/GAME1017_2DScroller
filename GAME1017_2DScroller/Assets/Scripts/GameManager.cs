@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     public SoundManager soundManager;
 
     public ScoreController scoreManager;
-    public GameObject playerCharacter;
 
     private GameManager(){}
     public static GameManager instance = null;
@@ -56,7 +55,6 @@ public class GameManager : MonoBehaviour
         CurrentState = States.GameOver;
         SceneManager.LoadScene("GameOverScene");
         soundManager.PlaySfx(soundManager.deathSfx);
-        PlayerPrefs.SetInt("Score", (int)playerCharacter.transform.position.x);
         PlayerPrefs.Save();
         Debug.Log("Saved Score: " + PlayerPrefs.GetInt("Score"));
 
