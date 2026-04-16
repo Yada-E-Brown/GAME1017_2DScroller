@@ -15,6 +15,7 @@ public class LeaderboardManager : MonoBehaviour
     public void OpenLeaderBoadManager()
     {
         LeaderboardCanvas.SetActive(true);
+        DisplayLeaderboard();
     }
     public void CloseLeaderboardCanvas()
     {

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private Animator anim;
     private Rigidbody2D rb;
 
     public float runningVelocity = 2f;
@@ -26,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -37,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
             isJumping = true;
             jumpTimeCounter = 0f;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+            anim.SetTrigger("jump");
+            anim.SetBool("isGrounded", false);
         }
 
         //  higher jump
@@ -92,13 +96,16 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = true;
             isJumping = false;
         }
+        anim.SetBool("isGrounded", true);
     }
+
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            anim.SetBool("isGrounded", false);
         }
     }
     public void Slow(float amount)
@@ -106,5 +113,10 @@ public class PlayerMovement : MonoBehaviour
         speedMultiplier = amount;
         slowTimer = slowDuration;
 
+    }
+    public void IncreaseSpeed(float amount, float maxCap)
+    {
+        speedMultiplier += amount;
+        speedMultiplier = Mathf.Min(speedMultiplier, maxCap);
     }
 }

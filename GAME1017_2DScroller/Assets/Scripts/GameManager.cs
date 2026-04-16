@@ -10,8 +10,6 @@ public class GameManager : MonoBehaviour
 
     public States CurrentState  = States.Menu;
 
-    public SoundManager soundManager;
-
     public ScoreController scoreManager;
 
     private GameManager(){}
@@ -31,10 +29,6 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            GameObject obj = new GameObject("SoundManager");
-            soundManager = obj.AddComponent<SoundManager>();
-            DontDestroyOnLoad(obj);
         }
         else
         {
@@ -47,17 +41,27 @@ public class GameManager : MonoBehaviour
         CurrentState = States.Play;
         SceneManager.LoadScene("GameScene");
         Debug.Log("Saved Score: " + PlayerPrefs.GetInt("Score"));
+
+        SoundManager.Instance.PlayMusic();
     }
 
     public void GameOver()
     {
-
         CurrentState = States.GameOver;
-        SceneManager.LoadScene("GameOverScene");
-        soundManager.PlaySfx(soundManager.deathSfx);
-        PlayerPrefs.Save();
-        Debug.Log("Saved Score: " + PlayerPrefs.GetInt("Score"));
 
+        if (scoreManager == null)
+        {
+            scoreManager = FindAnyObjectByType<ScoreController>();
+        }
+
+        if (scoreManager != null)
+        {
+            scoreManager.UpdateHighScore();
+            scoreManager.SaveScoreToLeaderboard();
+        }
+
+        SceneManager.LoadScene("GameOverScene");
+        SoundManager.Instance.PlaySfx(SoundManager.Instance.deathSfx);
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {

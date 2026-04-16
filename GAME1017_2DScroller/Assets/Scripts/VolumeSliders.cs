@@ -6,16 +6,16 @@ public class VolumeSlider : MonoBehaviour
     public Slider musicSlider;
     public Slider sfxSlider;
 
-    //private void Start()
-    //{
-    //    musicSlider.onValueChanged.AddListener((value) =>
-    //    {
-    //        GameManager.Instance.soundManager.SetMusicVolume(value);
-    //    });
+    private void Start()
+    {
+        musicSlider.onValueChanged.AddListener((value) =>
+        {
+           SoundManager.Instance.SetMusicVolume(value);
+        });
 
-    //    sfxSlider.onValueChanged.AddListener((value) =>
-    //    {
-    //        GameManager.Instance.soundManager.SetSfxVolume(value);
-    //    });
-    //}
+        sfxSlider.onValueChanged.AddListener((value) =>
+        {
+            SoundManager.Instance.SetSfxVolume(value);
+        });
+    }
 }

@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class SegmentSpawner : MonoBehaviour
 {
+    [SerializeField]
+    public TMP_Text DifficultyText;
     public GameObject rooftopPrefab;
     public int numPlatformsPerChunk = 5;
 
@@ -22,6 +25,19 @@ public class SegmentSpawner : MonoBehaviour
 
     private bool hasInitialized = false;
 
+    private float difficultyTimer = 0f;
+    public float difficultyInterval = 10f;
+
+    public float spacingIncrease = 2f;
+    public float speedIncrease = 0.2f;
+
+    //Speed cap
+    public float maxSpacingCap = 40f;
+    public float maxSpeedMultiplier = 3f;
+
+    public float difficultyLevel = 0f;
+
+
     void Start()
     {
         FindPlayer();
@@ -35,6 +51,7 @@ public class SegmentSpawner : MonoBehaviour
     }
     private void Update()
     {
+        DifficultyText.text = "Level: " + difficultyLevel;
         if (GameManager.Instance.CurrentState != GameManager.States.Play)
             return;
 
@@ -62,6 +79,28 @@ public class SegmentSpawner : MonoBehaviour
                 Destroy(spawnedPlatforms[0]);
             }
             spawnedPlatforms.RemoveAt(0);
+        }
+        difficultyTimer += Time.deltaTime;
+
+        if (difficultyTimer >= difficultyInterval)
+        {
+            difficultyTimer = 0f;
+            difficultyLevel++;
+
+
+            // Increase platform spacing
+            minSpacing += spacingIncrease;
+            maxSpacing += spacingIncrease;
+
+            minSpacing = Mathf.Min(minSpacing, maxSpacingCap);
+            maxSpacing = Mathf.Min(maxSpacing, maxSpacingCap);
+
+            // Increase player speed
+            PlayerMovement playerMove = playerCharacter.GetComponent<PlayerMovement>();
+            if (playerMove != null)
+            {
+                playerMove.IncreaseSpeed(speedIncrease, maxSpeedMultiplier);
+            }
         }
     }
     void BuildSegmentsAt(Vector3 posOffset)
